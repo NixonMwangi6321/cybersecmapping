@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyber Threat Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" />
+    <style>
+        #map { height: 100vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-animated-marker/1.1.1/AnimatedMarker.min.js"></script>
+    <script>
+        // Enhanced sample data with individual incidents per institution
+        const threatData = [
+            {
+                city: "Nairobi",
+                latitude: -1.286389,
+                longitude: 36.817223,
+                cases: [
+                    {
+                        institution: "ABC Bank",
+                        threat_type: "Phishing",
+                        details: "Phishing attack on ABC Bank's employees.",
+                        severity: "High",
+                        date: "2023-05-15"
+                    },
+                    {
+                        institution: "E Citizen",
+                        threat_type: "DDoS",
+                        details: "Disabling of internet based and mobile payment platforms like Mpesa.Affected over 5000 public service.",
+                        severity: "High",
+                        date: "2023-07-15"
+                    },
+                    {
+                        institution: "University of Nairobi",
+                        threat_type: "Ransomware",
+                        details: "Ransomware attack on University of Nairobi's student database.",
+                        severity: "Medium",
+                        date: "2023-09-28"
+                    },
+                    {
+                        "institution": "UVW Insurance",
+                        "threat_type": "Ransomware",
+                        "details": "Ransomware attack on UVW Insurance's systems.",
+                        "severity": "Medium",
+                        "date": "2023-09-18"
+                      },
+                      {
+                        "institution": "EFG University",
+                        "threat_type": "Malware",
+                        "details": "Malware infection in EFG University's network.",
+                        "severity": "High",
+                        "date": "2024-02-05"
+                      },
+                    {
+                        institution: "XYZ Tech",
+                        threat_type: "Data Breach",
+                        details: "Data breach at XYZ Tech affecting customer data.",
+                        severity: "High",
+                        date: "2024-01-12"
+                    }
+                ]
+            },
+            {
+                city: "Mombasa",
+                latitude: -4.043477,
+                longitude: 39.668206,
+                cases: [
+                    {
+                        institution: "DEF Government",
+                        threat_type: "Malware",
+                        details: "Malware infection in DEF Government's network.",
+                        severity: "Medium",
+                        date: "2023-11-02"
+                    },
+                    {
+                        institution: "Mombasa County Government",
+                        threat_type: "Malware",
+                        details: "Malware infection in Mombasa County Government's systems.",
+                        severity: "High",
+                        date: "2023-12-05"
+                    },
+                    {
+                        "institution": "GHI Shipping",
+                        "threat_type": "Phishing",
+                        "details": "Phishing attempt targeting GHI Shipping's logistics.",
+                        "severity": "High",
+                        "date": "2023-08-10"
+                      },
+                    {
+                        institution: "Mombasa University",
+                        threat_type: "Phishing",
+                        details: "Phishing attempt targeting Mombasa University's faculty.",
+                        severity: "Medium",
+                        date: "2024-02-15"
+                    },
+
+                    {
+                        institution: "LMN Retail",
+                        threat_type: "Ransomware",
+                        details: "Ransomware attack on LMN Retail's systems.",
+                        severity: "Low",
+                        date: "2024-02-20"
+                    }
+                ]
+            },
+            {
+                city: "Kisumu",
+                latitude: -0.091702,
+                longitude: 34.767956,
+                cases: [
+                    {
+                        institution: "PQR Hospital",
+                        threat_type: "Data Breach",
+                        details: "Data breach at PQR Hospital exposing patient records.",
+                        severity: "High",
+                        date: "2023-08-22"
+                    },
+                    {
+                        institution: "Kisumu Teaching and Referral Hospital",
+                        threat_type: "Data Breach",
+                        details: "Data breach at Kisumu Teaching and Referral Hospital exposing patient records.",
+                        severity: "High",
+                        date: "2023-08-10"
+                    },
+                    {
+                        institution: "Kisumu Technical Training Institute",
+                        threat_type: "Ransomware",
+                        details: "Ransomware attack on Kisumu Technical Training Institute's systems.",
+                        severity: "Medium",
+                        date: "2024-03-02"
+                    },
+                    {
+                        "institution": "IJK Retail",
+                        "threat_type": "Phishing",
+                        "details": "Phishing attempt targeting IJK Retail's customers.",
+                        "severity": "Low",
+                        "date": "2023-11-30"
+                      },
+                    {
+                        institution: "STU University",
+                        threat_type: "Ransomware",
+                        details: "Ransomware attack on STU University affecting student data.",
+                        severity: "Medium",
+                        date: "2024-02-10"
+                    }
+                ]
+            },
+            {
+                city: "Nakuru",
+                latitude: -0.303099,
+                longitude: 36.080025,
+                cases: [
+                    {
+                        institution: "VWX Retail",
+                        threat_type: "Ransomware",
+                        details: "Ransomware attack on VWX Retail's systems.",
+                        severity: "Low",
+                        date: "2023-07-15"
+                    },
+                    {
+                        institution:"Milimani",
+                        threat_type:"phishing",
+                        details:"A Kenyan college gang has been hacking into people’s credit cards through email phishing and using the money to buy bitcoin",
+                        severity:"high",
+                        date:"2023-02-16"
+       
+
+                    },
+                    {
+                        institution:"Kabarak University",
+                        threat_type:"malware attack",
+                        details:"Kabarak university facebook was hacked and used to post absurd content",
+                        severity:"high",
+                        date:"2023-05-16"
+       
+
+                    },
+                    {
+                        institution: "QRS Store",
+                        threat_type: "Phishing",
+                        details: "Phishing attempt targeting QRS Store's customers.",
+                        severity: "Medium",
+                        date: "2024-03-11"
+                    }
+                ]
+            },
+            {
+                city: "Eldoret",
+                latitude: 0.514277,
+                longitude: 35.269779,
+                cases: [
+                    {
+                        institution: "GHI School",
+                        threat_type: "Phishing",
+                        details: "Phishing scam targeting GHI School's faculty.",
+                        severity: "Medium",
+                        date: "2023-10-25"
+                    },
+                    {
+                        institution: "Eldoret University",
+                        threat_type: "Phishing",
+                        details: "Phishing scam targeting Eldoret University's staff.",
+                        severity: "Medium",
+                        date: "2023-11-18"
+                    }
+                ]
+            },
+        
+            {
+                city: "Thika",
+                latitude: -1.033333,
+                longitude: 37.069328,
+                cases: [
+                    {
+                        institution: "JKL Manufacturing",
+                        threat_type: "Malware",
+                        details: "Malware attack on JKL Manufacturing's production systems.",
+                        severity: "High",
+                        date: "2023-09-05"
+                    }
+                ]
+            },
+            {
+                city: "Nyeri",
+                latitude: -0.427942,
+                longitude: 36.943359,
+                cases: [
+                    {
+                        institution: "MNO Cooperative",
+                        threat_type: "Data Breach",
+                        details: "Data breach at MNO Cooperative affecting member data.",
+                        severity: "Medium",
+                        date: "2023-12-17"
+                    }
+                ]
+            },
+            {
+                city: "Machakos",
+                latitude: -1.518509,
+                longitude: 37.263414,
+                cases: [
+                    {
+                        institution: "WXY County",
+                        threat_type: "Ransomware",
+                        details: "Ransomware incident in WXY County government offices.",
+                        severity: "High",
+                        date: "2024-01-30"
+                    }
+                ]
+            },
+            {
+                city: "Meru",
+                latitude: 0.047035,
+                longitude: 37.649803,
+                cases: [
+                    {
+                        institution: "IJK Health",
+                        threat_type: "Phishing",
+                        details: "Phishing attempt targeting IJK Health's medical staff.",
+                        severity: "Low",
+                        date: "2023-11-12"
+                    }
+                ]
+            },
+            {
+                city: "Garissa",
+                latitude: -0.456944,
+                longitude: 39.658333,
+                cases: [
+                    {
+                        institution: "NOP Education",
+                        threat_type: "Malware",
+                        details: "Malware infections in NOP Education institutions.",
+                        severity: "High",
+                        date: "2023-06-25"
+                    }
+                ]
+            }
+        ];
+
+        // Initialize map centered on Kenya
+        const map = L.map('map').setView([0.0236, 37.9062], 6);
+
+        // OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Function to get color based on severity
+        function getSeverityColor(severity) {
+            switch(severity) {
+                case 'High': return 'red';
+                case 'Medium': return 'orange';
+                case 'Low': return 'green';
+                default: return 'blue';
+            }
+        }
+
+        // Create a marker cluster group
+        const markers = L.markerClusterGroup();
+
+        // Add markers for each threat
+        threatData.forEach(threat => {
+            threat.cases.forEach(caseData => {
+                const marker = L.circleMarker([threat.latitude, threat.longitude], {
+                    radius: 8,
+                    fillColor: getSeverityColor(caseData.severity),
+                    color: "#000",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                })
+                .bindPopup(`<b>${threat.city}</b><br>Institution: ${caseData.institution}<br>Threat: ${caseData.threat_type}<br>Details: ${caseData.details}<br>Severity: ${caseData.severity}<br>Date: ${caseData.date}`);
+                markers.addLayer(marker);
+            });
+        });
+
+        // Add the marker cluster group to the map
+        map.addLayer(markers);
+
+        // Restrict the view to Kenya
+        map.setMaxBounds([
+            [-4.7, 33.9], // Southwest corner of the bounding box
+            [5.0, 41.9]   // Northeast corner of the bounding box
+        ]);
+    </script>
+</body>
+</html>
